@@ -23,9 +23,9 @@ function bcisdecimal($number)
      * Explicacion:
      * $numeroEjemplo = "320.1357"
      * 1) Crea un numero "$fix" que terminara siendo de la forma:
-     *      - 005 para por ej, una escala de 2
-     *      - 0005 para por ej, una escala de 3
-     * 2) Luego, al numero que se quiere redondear le suma (o resta) el valor de 0.$fix, usando bcadd (o bcsub) con una escala aumentada en 1:
+     *      - 0.005 para por ej, una escala de 2
+     *      - 0.0005 para por ej, una escala de 3
+     * 2) Luego, al numero que se quiere redondear le suma (o resta) el valor de $fix, usando bcadd (o bcsub) con una escala aumentada en 1:
      *      - 320.1357 + 0.005 para por ej, una escala de 2 -> = 320.1407
      *      - 320.1357 + 0.0005 para por ej, una escala de 3 -> = 320.1362
      * 3) Finalmente recorta la parte decimal del numero a la cantidad de digitos indicada por $scale
@@ -38,15 +38,12 @@ function bcround($number, $scale = 0)
     // Si el numero tiene parte decimal, se procesa
     if (bcisdecimal($number)) {
         // Calcula el $fix a sumar o restar al valor para redondear
-        $fix = '5';
-        for ($i = 0; $i < $scale; $i++) {
-            $fix = "0$fix";
-        }
+        $fix = '0.' . str_repeat('0', $scale) . '5';
         // Si es negativo, resta el fix
         if (bcnegative($number)) {
-            $number = bcsub($number, "0.$fix", $scale + 1);
+            $number = bcsub($number, $fix, $scale + 1);
         } else {// Si es positivo, suma el fix
-            $number = bcadd($number, "0.$fix", $scale + 1);
+            $number = bcadd($number, $fix, $scale + 1);
         }
         // Recorta la parte decimal a la cantidad de posiciones de $scale
         list($int, $decimal) = explode('.', $number);
